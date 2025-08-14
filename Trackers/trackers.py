@@ -58,14 +58,14 @@ class Trackers:
             openvr.init(openvr.VRApplication_Other)
             
         except openvr.error_code.InitError_VendorSpecific_OculusLinkNotEnabled:
-            print("[오류] Oculus Link가 활성화되어 있지 않습니다. Oculus PC 앱에서 Link 기능을 켜고 다시 시도하세요.")
+            print("[Trackers] Oculus Link가 활성화되어 있지 않습니다. Oculus PC 앱에서 Link 기능을 켜고 다시 시도하세요.")
             exit(0)
         except openvr.error_code.InitError_Init_HmdNotFound:
-            print("[오류] HMD(헤드셋)를 찾을 수 없습니다. 연결 상태를 확인하세요.")
+            print("[Trackers] HMD(헤드셋)를 찾을 수 없습니다. 연결 상태를 확인하세요.")
         except openvr.error_code.InitError_Init_PathRegistryNotFound:
-            print("[오류] OpenVR 런타임이 설치되지 않았거나 경로를 찾을 수 없습니다.")
+            print("[Trackers] OpenVR 런타임이 설치되지 않았거나 경로를 찾을 수 없습니다.")
         except openvr.OpenVRError as e:
-            print(f"[OpenVR 초기화 실패] {e}")
+            print(f"[Trackers] OpenVR 초기화 실패: {e}")
 
         else:
             self.vrsys = openvr.VRSystem()
@@ -89,7 +89,7 @@ class Trackers:
                     })
 
             if not self.tracker_ids:
-                print("트래커가 감지되지 않았습니다. SteamVR에서 페어링/활성화 확인.")
+                print("[Trackers] 트래커가 감지되지 않았습니다. SteamVR에서 페어링/활성화 확인.")
                 openvr.shutdown()
                 return
             
@@ -118,8 +118,8 @@ class Trackers:
     def get_tracker_transform(self, role="left_hand"):
         idx = self.tracker_index_num[role]
         if idx == -1:
-            print(f"{role} tracker is not connected")
-            return -1, -1
+            print(f"[Trackers] {role} tracker is not connected")
+            return [0.0]*3, [0.0]*4
         
         t_list = self.info[idx]["t"]
         q_list = self.info[idx]["q"]
@@ -235,7 +235,7 @@ def main():
     trackers.print_poses_enable = True
     time.sleep(5)
 
-    t, q = trackers.get_tracker_transform("left_hand")
+    t, q = trackers.get_tracker_transform("right_hand")
     print(t, q)
     time.sleep(5)
 
