@@ -138,21 +138,23 @@ class Trackers:
 ### Don't call the function from outside.
     def set_role(self):
         for i in range(self.tracker_num):
-            if self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[0]]:
-                self.info[i]["role"] = self.tracker_name[0]
-                self.tracker_index_num[self.tracker_name[0]] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[1]]:
-                self.info[i]["role"] = self.tracker_name[1]
-                self.tracker_index_num[self.tracker_name[1]] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[2]]:
-                self.info[i]["role"] = self.tracker_name[2]
-                self.tracker_index_num[self.tracker_name[2]] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[3]]:
-                self.info[i]["role"] = self.tracker_name[3]
-                self.tracker_index_num[self.tracker_name[3]] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[4]]:
-                self.info[i]["role"] = self.tracker_name[4]
-                self.tracker_index_num[self.tracker_name[4]] = i
+            for j in range(len(self.tracker_name)):
+                if self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[j]]:
+                    self.info[i]["role"] = self.tracker_name[j]
+                    self.tracker_index_num[self.tracker_name[j]] = i
+                    break
+            # elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[1]]:
+            #     self.info[i]["role"] = self.tracker_name[1]
+            #     self.tracker_index_num[self.tracker_name[1]] = i
+            # elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[2]]:
+            #     self.info[i]["role"] = self.tracker_name[2]
+            #     self.tracker_index_num[self.tracker_name[2]] = i
+            # elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[3]]:
+            #     self.info[i]["role"] = self.tracker_name[3]
+            #     self.tracker_index_num[self.tracker_name[3]] = i
+            # elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[4]]:
+            #     self.info[i]["role"] = self.tracker_name[4]
+            #     self.tracker_index_num[self.tracker_name[4]] = i
 
     def get_prop_string(self, vrsys, i, prop):
         try:
