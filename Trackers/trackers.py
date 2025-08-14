@@ -13,6 +13,13 @@ class Trackers:
         "left_foot" : "53-A33500346",
         "right_foot" : "53-A33503087"}
     
+    tracker_index_num = {
+        "left_hand" : 0,
+        "right_hand" : 0,
+        "waist" : 0,
+        "left_foot" : 0,
+        "right_foot" : 0}
+    
     def __init__(self):
         self.print_poses_enable = False
         self.get_data_interver = 0.02
@@ -74,22 +81,46 @@ class Trackers:
             self.thread.join(timeout=0.1)
         openvr.shutdown()
             
-    def print_info(self):
+    def print_info_all(self):
         for i in self.info:
             print(i)
-        
+
+    def print_info_short(self):
+        for item in self.info:
+            #t_list = [float(v) for v in item['t']]  # np.float64 → float 변환
+            t_str = ", ".join(f"{float(v):+.6f}" for v in item['t'])
+            q_str = ", ".join(f"{float(v):+.6f}" for v in item['q'])
+            print(f"[{item['role']}] pos=[{t_str}] quat=[{q_str}]")
+            # print(f"[{item['role']}] {t_list}\t{item['q']}")
+    
+    def get_tracker_transform(self, role="left_hand"):
+        idx = self.tracker_index_num[role]
+        t_list = self.info[idx]["t"]
+        q_list = self.info[idx]["q"]
+        return t_list, q_list
+        # for i in range(self.tracker_num):
+        #     if role == self.info[i]["role"]:
+        #         return self.info[i][role]
+
+
+
     def set_role(self):
         for i in range(self.tracker_num):
             if self.info[i]["serial"] == self.tracker_seral_num["left_hand"]:
                 self.info[i]["role"] = "left_hand"
+                self.tracker_index_num["left_hand"] = i
             elif self.info[i]["serial"] == self.tracker_seral_num["right_hand"]:
                 self.info[i]["role"] = "right_hand"
+                self.tracker_index_num["right_hand"] = i
             elif self.info[i]["serial"] == self.tracker_seral_num["waist"]:
                 self.info[i]["role"] = "waist"
+                self.tracker_index_num["waist"] = i
             elif self.info[i]["serial"] == self.tracker_seral_num["left_foot"]:
                 self.info[i]["role"] = "left_foot"
+                self.tracker_index_num["left_foot"] = i
             elif self.info[i]["serial"] == self.tracker_seral_num["right_foot"]:
                 self.info[i]["role"] = "right_foot"
+                self.tracker_index_num["right_foot"] = i
 
     def get_prop_string(self, vrsys, i, prop):
         try:
@@ -117,8 +148,9 @@ class Trackers:
                     self.info[i-1]["q"][j] = q[j]
 
                 if self.print_poses_enable:
-                    print(f"[{i}] pos(m)=({t[0]:+.3f},{t[1]:+.3f},{t[2]:+.3f}) "
-                        f"quat=({q[0]:+.3f},{q[1]:+.3f},{q[2]:+.3f},{q[3]:+.3f})")
+                    self.print_info_short()
+                    # print(f"[{i}] pos(m)=({t[0]:+.3f},{t[1]:+.3f},{t[2]:+.3f}) "
+                    #     f"quat=({q[0]:+.3f},{q[1]:+.3f},{q[2]:+.3f},{q[3]:+.3f})")
             sys.stdout.flush()
         except:
             pass
@@ -172,23 +204,16 @@ def r_to_quat(R):
 ############################## Test ##############################
 def main():
     trackers = Trackers()
-    trackers.print_info()
+    trackers.print_info_all()
     trackers.start_get_poses()
 
     trackers.print_poses_enable = True
     time.sleep(5)
+    t, q = trackers.get_tracker_transform(role="left_hand")
+    print(t, q)
+    time.sleep(5)
 
     trackers.print_poses_enable = False
-    trackers.print_info()
-    time.sleep(1)
-    trackers.print_info()
-    time.sleep(1)
-    trackers.print_info()
-    time.sleep(1)
-    trackers.print_info()
-    time.sleep(1)
-    trackers.print_info()
-    time.sleep(1)
 
     trackers.disconnect()
 
