@@ -181,8 +181,8 @@ class Trackers:
                 for j in range(4):
                     self.info[i-1]["q"][j] = q[j]
 
-                if self.print_poses_enable:
-                    self.print_info_short()
+                # if self.print_poses_enable:
+                    #self.print_info_short()
                     # print(f"[{i}] pos(m)=({t[0]:+.3f},{t[1]:+.3f},{t[2]:+.3f}) "
                     #     f"quat=({q[0]:+.3f},{q[1]:+.3f},{q[2]:+.3f},{q[3]:+.3f})")
             sys.stdout.flush()
@@ -192,6 +192,8 @@ class Trackers:
     def get_poses_loop(self):
         while True:
             self.get_poses()
+            if self.print_poses_enable:
+                self.print_info_short()
             time.sleep(self.get_data_interver_sec)
 
     def start_get_poses(self):
