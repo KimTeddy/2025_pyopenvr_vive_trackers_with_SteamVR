@@ -13,10 +13,12 @@ class Trackers:
     # trackers.start_get_poses() # start get pose thread(default: auto_start=True)
 
     trackers.print_poses_enable = True # enable print trackers pos, quat
+    [left_hand] pos=[+0.057783, +0.494660, -0.163734] quat=[+0.654288, +0.292908, -0.304005, +0.627449]
     time.sleep(5)
 
     t, q = trackers.get_tracker_transform("left_hand") # get trackers pos, quat
     print(t, q)
+    # [np.float64(0.05778329074382782), np.float64(0.4946601986885071), np.float64(-0.1637340635061264)] [0.6542882641961044, 0.29290816397643943, -0.304004754360601, 0.6274494359879317]
     time.sleep(5)
 
     trackers.print_poses_enable = False
