@@ -6,6 +6,13 @@ import openvr
 
 ############################## Class ##############################
 class Trackers:
+    tracker_seral_num = {
+        "left_hand" : "53-A33503456",
+        "right_hand" : "53-A33500591",
+        "waist" : "53-A33502625",
+        "left_foot" : "53-A33500346",
+        "right_foot" : "53-A33503087"}
+    
     def __init__(self):
         self.print_poses_enable = False
         self.get_data_interver = 0.02
@@ -14,6 +21,7 @@ class Trackers:
         self.tracker_ids = [] # 트래커 인덱스 수집 (GenericTracker)
 
         self.info = []
+        self.tracker_num = 0
 
         self.connect()
 
@@ -25,13 +33,10 @@ class Trackers:
         except openvr.error_code.InitError_VendorSpecific_OculusLinkNotEnabled:
             print("[오류] Oculus Link가 활성화되어 있지 않습니다. Oculus PC 앱에서 Link 기능을 켜고 다시 시도하세요.")
             exit(0)
-
         except openvr.error_code.InitError_Init_HmdNotFound:
             print("[오류] HMD(헤드셋)를 찾을 수 없습니다. 연결 상태를 확인하세요.")
-
         except openvr.error_code.InitError_Init_PathRegistryNotFound:
             print("[오류] OpenVR 런타임이 설치되지 않았거나 경로를 찾을 수 없습니다.")
-
         except openvr.OpenVRError as e:
             print(f"[OpenVR 초기화 실패] {e}")
 
@@ -48,9 +53,10 @@ class Trackers:
                     self.tracker_ids.append(i)
                     self.info.append({
                         "idx": int(i),
-                        "serial": serial,
+                        "role":"",
                         "t":[0.0, 0.0, 0.0],
                         "q":[0.0, 0.0, 0.0, 0.0],
+                        "serial": serial,
                         "model": model,
                         "type": ctype,
                     })
@@ -59,6 +65,9 @@ class Trackers:
                 print("트래커가 감지되지 않았습니다. SteamVR에서 페어링/활성화 확인.")
                 openvr.shutdown()
                 return
+            
+            self.tracker_num = len(self.info)
+            self.set_role()
             
     def disconnect(self):
         if getattr(self, "thread", None) is not None:
@@ -69,6 +78,19 @@ class Trackers:
         for i in self.info:
             print(i)
         
+    def set_role(self):
+        for i in range(self.tracker_num):
+            if self.info[i]["serial"] == self.tracker_seral_num["left_hand"]:
+                self.info[i]["role"] = "left_hand"
+            elif self.info[i]["serial"] == self.tracker_seral_num["right_hand"]:
+                self.info[i]["role"] = "right_hand"
+            elif self.info[i]["serial"] == self.tracker_seral_num["waist"]:
+                self.info[i]["role"] = "waist"
+            elif self.info[i]["serial"] == self.tracker_seral_num["left_foot"]:
+                self.info[i]["role"] = "left_foot"
+            elif self.info[i]["serial"] == self.tracker_seral_num["right_foot"]:
+                self.info[i]["role"] = "right_foot"
+
     def get_prop_string(self, vrsys, i, prop):
         try:
             return vrsys.getStringTrackedDeviceProperty(i, prop)
@@ -152,11 +174,22 @@ def main():
     trackers = Trackers()
     trackers.print_info()
     trackers.start_get_poses()
+
     trackers.print_poses_enable = True
     time.sleep(5)
+
     trackers.print_poses_enable = False
     trackers.print_info()
-    time.sleep(5)
+    time.sleep(1)
+    trackers.print_info()
+    time.sleep(1)
+    trackers.print_info()
+    time.sleep(1)
+    trackers.print_info()
+    time.sleep(1)
+    trackers.print_info()
+    time.sleep(1)
+
     trackers.disconnect()
 
 if __name__ == "__main__":
