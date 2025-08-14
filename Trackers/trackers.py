@@ -25,19 +25,26 @@ class Trackers:
 
     trackers.disconnect()
     '''
+    tracker_name =[
+        "left_hand" ,
+        "right_hand",
+        "waist"     ,
+        "left_foot" ,
+        "right_foot"]
+
     tracker_seral_num = {
-        "left_hand" : "53-A33503456",
-        "right_hand" : "53-A33500591",
-        "waist" : "53-A33502625",
-        "left_foot" : "53-A33500346",
-        "right_foot" : "53-A33503087"}
+        tracker_name[0] : "53-A33503456",
+        tracker_name[1] : "53-A33500591",
+        tracker_name[2] : "53-A33502625",
+        tracker_name[3] : "53-A33500346",
+        tracker_name[4] : "53-A33503087"}
     
     tracker_index_num = {
-        "left_hand" : -1,
-        "right_hand": -1,
-        "waist"     : -1,
-        "left_foot" : -1,
-        "right_foot": -1}
+        tracker_name[0] : -1,
+        tracker_name[1] : -1,
+        tracker_name[2] : -1,
+        tracker_name[3] : -1,
+        tracker_name[4] : -1}
     
     def __init__(self, auto_start=True):
         self.auto_start = auto_start
@@ -131,21 +138,21 @@ class Trackers:
 ### Don't call the function from outside.
     def set_role(self):
         for i in range(self.tracker_num):
-            if self.info[i]["serial"] == self.tracker_seral_num["left_hand"]:
-                self.info[i]["role"] = "left_hand"
-                self.tracker_index_num["left_hand"] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num["right_hand"]:
-                self.info[i]["role"] = "right_hand"
-                self.tracker_index_num["right_hand"] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num["waist"]:
-                self.info[i]["role"] = "waist"
-                self.tracker_index_num["waist"] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num["left_foot"]:
-                self.info[i]["role"] = "left_foot"
-                self.tracker_index_num["left_foot"] = i
-            elif self.info[i]["serial"] == self.tracker_seral_num["right_foot"]:
-                self.info[i]["role"] = "right_foot"
-                self.tracker_index_num["right_foot"] = i
+            if self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[0]]:
+                self.info[i]["role"] = self.tracker_name[0]
+                self.tracker_index_num[self.tracker_name[0]] = i
+            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[1]]:
+                self.info[i]["role"] = self.tracker_name[1]
+                self.tracker_index_num[self.tracker_name[1]] = i
+            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[2]]:
+                self.info[i]["role"] = self.tracker_name[2]
+                self.tracker_index_num[self.tracker_name[2]] = i
+            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[3]]:
+                self.info[i]["role"] = self.tracker_name[3]
+                self.tracker_index_num[self.tracker_name[3]] = i
+            elif self.info[i]["serial"] == self.tracker_seral_num[self.tracker_name[4]]:
+                self.info[i]["role"] = self.tracker_name[4]
+                self.tracker_index_num[self.tracker_name[4]] = i
 
     def get_prop_string(self, vrsys, i, prop):
         try:
