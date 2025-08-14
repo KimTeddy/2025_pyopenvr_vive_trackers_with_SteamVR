@@ -6,6 +6,23 @@ import openvr
 
 ############################## Class ##############################
 class Trackers:
+    '''
+    trackers = Trackers() # init
+    trackers.print_info_all() 
+    # {'idx': 1, 'role': 'left_hand', 't': [0.0, 0.0, 0.0], 'q': [0.0, 0.0, 0.0, 0.0], 'serial': '53-A33503456', 'model': 'VIVE Ultimate Tracker 1', 'type': 'vive_ultimate_tracker'}
+    # trackers.start_get_poses() # start get pose thread(default: auto_start=True)
+
+    trackers.print_poses_enable = True # enable print trackers pos, quat
+    time.sleep(5)
+
+    t, q = trackers.get_tracker_transform("left_hand") # get trackers pos, quat
+    print(t, q)
+    time.sleep(5)
+
+    trackers.print_poses_enable = False
+
+    trackers.disconnect()
+    '''
     tracker_seral_num = {
         "left_hand" : "53-A33503456",
         "right_hand" : "53-A33500591",
@@ -20,7 +37,8 @@ class Trackers:
         "left_foot" : 0,
         "right_foot" : 0}
     
-    def __init__(self):
+    def __init__(self, auto_start=True):
+        self.auto_start = auto_start
         self.print_poses_enable = False
         self.get_data_interver = 0.02
 
@@ -75,6 +93,8 @@ class Trackers:
             
             self.tracker_num = len(self.info)
             self.set_role()
+            if self.auto_start:
+                self.start_get_poses()
             
     def disconnect(self):
         if getattr(self, "thread", None) is not None:
@@ -102,8 +122,7 @@ class Trackers:
         #     if role == self.info[i]["role"]:
         #         return self.info[i][role]
 
-
-
+### Don't call the function from outside.
     def set_role(self):
         for i in range(self.tracker_num):
             if self.info[i]["serial"] == self.tracker_seral_num["left_hand"]:
@@ -203,13 +222,14 @@ def r_to_quat(R):
 
 ############################## Test ##############################
 def main():
-    trackers = Trackers()
+    trackers = Trackers(auto_start=True)
     trackers.print_info_all()
-    trackers.start_get_poses()
+    # trackers.start_get_poses()
 
     trackers.print_poses_enable = True
     time.sleep(5)
-    t, q = trackers.get_tracker_transform(role="left_hand")
+
+    t, q = trackers.get_tracker_transform("left_hand")
     print(t, q)
     time.sleep(5)
 
