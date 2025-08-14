@@ -65,7 +65,7 @@ def main():
         openvr.shutdown()
         return
 
-    print("\nReading poses for 10 seconds...")
+    print("\nReading poses for 100 seconds...")
     t0 = time.time()
     # 미리 pose 배열 준비
     maxN = openvr.k_unMaxTrackedDeviceCount
