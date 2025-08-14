@@ -33,16 +33,16 @@ class Trackers:
         "right_foot" : "53-A33503087"}
     
     tracker_index_num = {
-        "left_hand" : 0,
-        "right_hand" : 0,
-        "waist" : 0,
-        "left_foot" : 0,
-        "right_foot" : 0}
+        "left_hand" : -1,
+        "right_hand": -1,
+        "waist"     : -1,
+        "left_foot" : -1,
+        "right_foot": -1}
     
     def __init__(self, auto_start=True):
         self.auto_start = auto_start
         self.print_poses_enable = False
-        self.get_data_interver = 0.02
+        self.get_data_interver_sec = 0.02
 
         self.maxN = 0
         self.tracker_ids = [] # 트래커 인덱스 수집 (GenericTracker)
@@ -117,6 +117,10 @@ class Trackers:
     
     def get_tracker_transform(self, role="left_hand"):
         idx = self.tracker_index_num[role]
+        if idx == -1:
+            print(f"{role} tracker is not connected")
+            return -1, -1
+        
         t_list = self.info[idx]["t"]
         q_list = self.info[idx]["q"]
         return t_list, q_list
@@ -179,7 +183,7 @@ class Trackers:
     def get_poses_loop(self):
         while True:
             self.get_poses()
-            time.sleep(self.get_data_interver)
+            time.sleep(self.get_data_interver_sec)
 
     def start_get_poses(self):
         self.thread = threading.Thread(target=self.get_poses_loop, daemon=True)
