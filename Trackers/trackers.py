@@ -7,12 +7,13 @@ import openvr
 ############################## Class ##############################
 class Trackers:
     def __init__(self):
-        self.info = []
-        self.maxN = 0
-        # 트래커 인덱스 수집 (GenericTracker)
-        self.tracker_ids = []
-
         self.print_poses_enable = False
+        self.get_data_interver = 0.02
+
+        self.maxN = 0
+        self.tracker_ids = [] # 트래커 인덱스 수집 (GenericTracker)
+
+        self.info = []
 
         self.connect()
 
@@ -47,8 +48,10 @@ class Trackers:
                     self.tracker_ids.append(i)
                     self.info.append({
                         "idx": int(i),
-                        "model": model,
                         "serial": serial,
+                        "t":[0.0, 0.0, 0.0],
+                        "q":[0.0, 0.0, 0.0, 0.0],
+                        "model": model,
                         "type": ctype,
                     })
 
@@ -73,35 +76,39 @@ class Trackers:
             return ""
         
     def get_poses(self):
-        # Compositor 없이 시스템에서 직접 포즈를 얻는다
-        # TrackingUniverseStanding(룸스케일) 기준, 예측시간 0초
-        poses = self.vrsys.getDeviceToAbsoluteTrackingPose(
-            openvr.TrackingUniverseStanding, 0.0, self.maxN
-        )
-        for i in self.tracker_ids:
-            p = poses[i]
-            if not p.bDeviceIsConnected or not p.bPoseIsValid:
-                continue
-            R, self.t = mat34_to_rt(p.mDeviceToAbsoluteTracking)
-            self.q = r_to_quat(R)
-            if self.print_poses_enable:
-                print(f"[{i}] pos(m)=({self.t[0]:+.3f},{self.t[1]:+.3f},{self.t[2]:+.3f}) "
-                    f"quat=({self.q[0]:+.3f},{self.q[1]:+.3f},{self.q[2]:+.3f},{self.q[3]:+.3f})")
-        sys.stdout.flush()
+        try:
+            # Compositor 없이 시스템에서 직접 포즈를 얻는다
+            # TrackingUniverseStanding(룸스케일) 기준, 예측시간 0초
+            poses = self.vrsys.getDeviceToAbsoluteTrackingPose(
+                openvr.TrackingUniverseStanding, 0.0, self.maxN
+            )
+            for i in self.tracker_ids:
+                p = poses[i]
+                if not p.bDeviceIsConnected or not p.bPoseIsValid:
+                    continue
+                R, t = mat34_to_rt(p.mDeviceToAbsoluteTracking)
+                q = r_to_quat(R)
+
+                for j in range(3):
+                    self.info[i-1]["t"][j] = t[j]
+                for j in range(4):
+                    self.info[i-1]["q"][j] = q[j]
+
+                if self.print_poses_enable:
+                    print(f"[{i}] pos(m)=({t[0]:+.3f},{t[1]:+.3f},{t[2]:+.3f}) "
+                        f"quat=({q[0]:+.3f},{q[1]:+.3f},{q[2]:+.3f},{q[3]:+.3f})")
+            sys.stdout.flush()
+        except:
+            pass
 
     def get_poses_loop(self):
         while True:
             self.get_poses()
-            time.sleep(0.02)
+            time.sleep(self.get_data_interver)
 
     def start_get_poses(self):
         self.thread = threading.Thread(target=self.get_poses_loop, daemon=True)
         self.thread.start()
-
-    
-
-        
-
 
 ############################## Functions ##############################
 def mat34_to_rt(m):
@@ -148,11 +155,9 @@ def main():
     trackers.print_poses_enable = True
     time.sleep(5)
     trackers.print_poses_enable = False
+    trackers.print_info()
     time.sleep(5)
     trackers.disconnect()
-
-
-
 
 if __name__ == "__main__":
     main()
