@@ -60,13 +60,10 @@ class Trackers:
         self._stop_event = threading.Event()
         self._lock = threading.Lock()  # (선택) 읽기/쓰기 동시성 보호
 
-        self.connect()
-
-        self.deviceIdx_to_infoIdx = {}  # 디바이스 인덱스 -> self.info 인덱스
-        for info_idx, item in enumerate(self.info):
-            self.deviceIdx_to_infoIdx[item["idx"]] = info_idx
+        #self.connect()
 
     def connect(self):
+        print("[Trackers] Connecting...")
         try:
             # 렌더링 안 할 거면 Other/Background로 초기화
             openvr.init(openvr.VRApplication_Other)
@@ -107,12 +104,19 @@ class Trackers:
                 openvr.shutdown()
                 return
             
-            self.tracker_num = len(self.info)
-            self.set_role()
-            if self.auto_start:
-                self.start_get_poses()
+            else:
+                self.tracker_num = len(self.info)
+                print(f"[Trackers] {self.tracker_num} Trackers connnected.\n")
+                self.set_role()
+                if self.auto_start:
+                    self.start_get_poses()
+                
+                self.deviceIdx_to_infoIdx = {}  # 디바이스 인덱스 -> self.info 인덱스
+                for info_idx, item in enumerate(self.info):
+                    self.deviceIdx_to_infoIdx[item["idx"]] = info_idx
             
     def disconnect(self):
+        print("[Trackers] Disconnecting...")
         if getattr(self, "thread", None) is not None:
             self._stop_event.set()
             self.thread.join(timeout=0.1)
@@ -241,6 +245,7 @@ def r_to_quat(R):
 ############################## Test ##############################
 def main():
     trackers = Trackers(auto_start=True)
+    trackers.connect()
     trackers.print_info_all()
     # trackers.start_get_poses()
 
