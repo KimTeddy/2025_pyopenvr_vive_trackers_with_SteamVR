@@ -139,6 +139,9 @@ class Trackers:
         t_list = self.info[idx]["t"]
         q_list = self.info[idx]["q"]
         return t_list, q_list
+        # for i in range(self.tracker_num):
+        #     if role == self.info[i]["role"]:
+        #         return self.info[i][role]
 
 ### Don't call the function from outside.
     def set_role(self):
@@ -148,6 +151,18 @@ class Trackers:
                     self.info[i]["role"] = self.tracker_name[j]
                     self.tracker_index_num[self.tracker_name[j]] = i
                     break
+            # elif self.info[i]["serial"] == self.tracker_serial_num[self.tracker_name[1]]:
+            #     self.info[i]["role"] = self.tracker_name[1]
+            #     self.tracker_index_num[self.tracker_name[1]] = i
+            # elif self.info[i]["serial"] == self.tracker_serial_num[self.tracker_name[2]]:
+            #     self.info[i]["role"] = self.tracker_name[2]
+            #     self.tracker_index_num[self.tracker_name[2]] = i
+            # elif self.info[i]["serial"] == self.tracker_serial_num[self.tracker_name[3]]:
+            #     self.info[i]["role"] = self.tracker_name[3]
+            #     self.tracker_index_num[self.tracker_name[3]] = i
+            # elif self.info[i]["serial"] == self.tracker_serial_num[self.tracker_name[4]]:
+            #     self.info[i]["role"] = self.tracker_name[4]
+            #     self.tracker_index_num[self.tracker_name[4]] = i
 
     def get_prop_string(self, vrsys, i, prop):
         try:
@@ -162,7 +177,17 @@ class Trackers:
             poses = self.vrsys.getDeviceToAbsoluteTrackingPose(
                 openvr.TrackingUniverseStanding, 0.0, self.maxN
             )
+            # for i in self.tracker_ids:
+            #     p = poses[i]
+            #     if not p.bDeviceIsConnected or not p.bPoseIsValid:
+            #         continue
+            #     R, t = mat34_to_rt(p.mDeviceToAbsoluteTracking)
+            #     q = r_to_quat(R)
 
+            #     for j in range(3):
+            #         self.info[i-1]["t"][j] = t[j]
+            #     for j in range(4):
+            #         self.info[i-1]["q"][j] = q[j]
             for i in self.tracker_ids:
                 p = poses[i]
                 if not p.bDeviceIsConnected or not p.bPoseIsValid:
@@ -177,10 +202,13 @@ class Trackers:
                     continue
 
                 # numpy → float 강제 캐스팅(선택)
-                for j in range(3):
-                    self.info[info_idx]["t"][j] = float(t[j])
-                for j in range(4):
-                    self.info[info_idx]["q"][j] = float(q[j])
+                self.info[info_idx]["t"][0] = float(t[0])
+                self.info[info_idx]["t"][1] = float(t[1])
+                self.info[info_idx]["t"][2] = float(t[2])
+                self.info[info_idx]["q"][0] = float(q[0])
+                self.info[info_idx]["q"][1] = float(q[1])
+                self.info[info_idx]["q"][2] = float(q[2])
+                self.info[info_idx]["q"][3] = float(q[3])
 
                 # if self.print_poses_enable:
                     #self.print_info_short()
